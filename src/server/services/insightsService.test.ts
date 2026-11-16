@@ -58,16 +58,16 @@ describe("InsightsService", () => {
 
   describe("payEquity", () => {
     it("reports the median gap per job title and flags gaps of 5% or more", () => {
-      [60_000, 62_000, 64_000, 66_000, 68_000].forEach((salary) => add({ gender: "male", salary }));
-      [56_000, 58_000, 59_000, 60_000, 61_000].forEach((salary) => add({ gender: "female", salary }));
+      [60_000, 62_000, 64_000, 66_000, 68_000].forEach((salary) => [0, 1].forEach(() => add({ gender: "male", salary })));
+      [56_000, 58_000, 59_000, 60_000, 61_000].forEach((salary) => [0, 1].forEach(() => add({ gender: "female", salary })));
       expect(insights.payEquity("GB")).toEqual([
-        { jobTitle: "Software Engineer", men: 5, women: 5, menMedian: 64_000, womenMedian: 59_000, gapPercent: 7.8, flagged: true },
+        { jobTitle: "Software Engineer", men: 10, women: 10, menMedian: 64_000, womenMedian: 59_000, gapPercent: 7.8, flagged: true },
       ]);
     });
 
-    it("hides groups with fewer than 5 people on either side", () => {
-      [60_000, 61_000, 62_000, 63_000, 64_000].forEach((salary) => add({ gender: "male", salary }));
-      [50_000, 51_000].forEach((salary) => add({ gender: "female", salary }));
+    it("hides groups with fewer than 10 people on either side", () => {
+      Array.from({ length: 12 }, (_, i) => add({ gender: "male", salary: 60_000 + i * 100 }));
+      Array.from({ length: 9 }, (_, i) => add({ gender: "female", salary: 50_000 + i * 100 }));
       expect(insights.payEquity("GB")).toEqual([]);
     });
   });
@@ -80,6 +80,12 @@ describe("InsightsService", () => {
       expect(insights.compression("GB")).toEqual([
         { jobTitle: "Software Engineer", recentHires: 2, tenured: 2, recentMedianCompa: 1.1, tenuredMedianCompa: 0.95, flagged: true },
       ]);
+    });
+
+    it("does not flag differences smaller than 0.03 of compa-ratio", () => {
+      add({ hireDate: "2026-01-01", salary: 61_200 }); // compa 1.02
+      add({ hireDate: "2020-01-01", salary: 60_000 }); // compa 1.00
+      expect(insights.compression("GB")[0].flagged).toBe(false);
     });
 
     it("skips roles without a band or without both groups", () => {
