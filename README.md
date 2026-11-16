@@ -4,7 +4,7 @@ A web tool for ACME's HR Manager to manage salaries for 10,000 employees across 
 
 Scope came from researching what compensation tools HR teams actually buy (Pave, Carta, HiBob, Workday) and what is changing in regulation. See [docs/RESEARCH.md](docs/RESEARCH.md).
 
-**Live demo:** _link added after deploy_ · **Video walkthrough:** _link added after recording_
+**Live demo:** https://salary-management-rhey.onrender.com (free tier: the first visit after idle takes about a minute while it wakes up and re-seeds) · **Video walkthrough:** _link added after recording_
 
 ## What it does
 
