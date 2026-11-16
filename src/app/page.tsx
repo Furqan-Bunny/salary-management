@@ -1,3 +1,10 @@
-export default function Home() {
-  return <p className="text-slate-500">Employees coming soon.</p>;
+import { Suspense } from "react";
+import { EmployeesView } from "@/components/EmployeesView";
+
+export default function EmployeesPage() {
+  return (
+    <Suspense>
+      <EmployeesView />
+    </Suspense>
+  );
 }
