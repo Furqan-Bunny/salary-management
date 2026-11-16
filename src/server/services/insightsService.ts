@@ -3,12 +3,14 @@ import { COUNTRIES, currencyOf, toUsd, type CountryCode } from "../domain/countr
 import { median, summarize, type SalaryStats } from "../domain/stats";
 import type { EmployeeRepository, PayFact } from "../repositories/employeeRepository";
 
-/** Below this group size a median is noise, and small groups can identify individuals. */
-export const MIN_GROUP_SIZE = 5;
+/** Below 10 people one person can move a median by several percent, and small groups can identify individuals. */
+export const MIN_GROUP_SIZE = 10;
 /** EU Pay Transparency Directive: an unexplained gap of 5% or more requires action. */
 export const PAY_GAP_THRESHOLD = 5;
 const RECENT_HIRE_YEARS = 1;
 const TENURED_YEARS = 3;
+/** Ignore compa-ratio differences smaller than this; they are within normal noise. */
+export const COMPRESSION_MARGIN = 0.03;
 
 export interface Overview {
   headcount: number;
@@ -180,7 +182,7 @@ export class InsightsService {
         tenured: tenured.length,
         recentMedianCompa,
         tenuredMedianCompa,
-        flagged: recentMedianCompa > tenuredMedianCompa,
+        flagged: round2(recentMedianCompa - tenuredMedianCompa) >= COMPRESSION_MARGIN,
       });
     }
     return rows.sort((a, b) => b.recentMedianCompa - b.tenuredMedianCompa - (a.recentMedianCompa - a.tenuredMedianCompa));

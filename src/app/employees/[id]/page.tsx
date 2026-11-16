@@ -24,7 +24,7 @@ export default async function EmployeePage({ params }: { params: Promise<{ id: s
   }
   const history = employees.history(id);
   const tenure = tenureYears(employee.hireDate);
-  const lastRaise = history.find((h) => h.reason !== "hire" && h.previousSalary !== null);
+  const lastRaise = history.find((h) => h.previousSalary !== null && h.newSalary > h.previousSalary);
 
   return (
     <div className="space-y-6">

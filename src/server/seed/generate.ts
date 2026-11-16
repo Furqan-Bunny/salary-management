@@ -150,9 +150,9 @@ export function generateDataset(count: number, seed = 42): { bands: SeedBand[]; 
     const underpaid = gender === "female" && PLANTED.payGap.some((p) => p.country === country && p.jobTitle === role.title);
 
     // Starting pay: people hired long ago started lower relative to today's band (bands drift up with the market).
-    const drift = Math.max(0.72, 1 - 0.025 * (daysAgo / 365));
+    const drift = Math.max(0.65, 1 - 0.024 * (daysAgo / 365));
     const startFactor =
-      (isCompressed && recentHire ? between(1.08, 1.16) : between(0.86, 1.06) * drift) * (underpaid ? 0.93 : 1);
+      (isCompressed && recentHire ? between(1.08, 1.16) : between(0.8, 1.06) * drift) * (underpaid ? 0.93 : 1);
     let salary = roundTo(band.mid * startFactor, 100);
 
     const history: SeedChange[] = [{ previousSalary: null, newSalary: salary, effectiveDate: isoDate(hire), reason: "hire" }];
@@ -162,9 +162,9 @@ export function generateDataset(count: number, seed = 42): { bands: SeedBand[]; 
     while (at < today) {
       const roll = random();
       const [reason, pct]: [ChangeReason, number] =
-        roll < 0.75 ? ["merit", between(0.02, isCompressed ? 0.03 : 0.06)]
-        : roll < 0.9 ? ["promotion", between(0.08, 0.15)]
-        : ["market_adjustment", between(0.04, 0.08)];
+        roll < 0.85 ? ["merit", between(0.02, isCompressed ? 0.03 : 0.05)]
+        : roll < 0.95 ? ["promotion", between(0.06, 0.12)]
+        : ["market_adjustment", between(0.03, 0.06)];
       const next = roundTo(salary * (1 + (underpaid ? pct * 0.5 : pct)), 100);
       history.push({ previousSalary: salary, newSalary: next, effectiveDate: isoDate(at), reason });
       salary = next;
